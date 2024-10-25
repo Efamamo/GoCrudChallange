@@ -13,7 +13,7 @@ type PersonRepo struct {
 
 func NewPersonRepo() *PersonRepo {
 	return &PersonRepo{
-		people: []*model.Person{},
+		people: make([]*model.Person, 0),
 	}
 }
 
