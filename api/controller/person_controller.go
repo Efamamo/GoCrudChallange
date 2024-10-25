@@ -19,7 +19,7 @@ type PersonController struct {
 }
 
 func (pc *PersonController) Create(c *gin.Context) {
-	var dto dtos.CreatePersonDTO
+	var dto dtos.CreateDTO
 	err := c.ShouldBindJSON(&dto)
 
 	if err != nil {
@@ -40,7 +40,7 @@ func (pc *PersonController) Create(c *gin.Context) {
 		return
 	}
 
-	response := dtos.PersonResponseDTO{
+	response := dtos.ResponseDTO{
 		ID:      p.Id(),
 		Name:    p.Name(),
 		Age:     p.Age(),
@@ -52,7 +52,7 @@ func (pc *PersonController) Create(c *gin.Context) {
 }
 
 func (pc *PersonController) Update(c *gin.Context) {
-	var dto dtos.CreatePersonDTO
+	var dto dtos.CreateDTO
 	id, err := uuid.Parse(c.Param("id"))
 
 	if err != nil {
@@ -78,7 +78,7 @@ func (pc *PersonController) Update(c *gin.Context) {
 		return
 	}
 
-	response := dtos.PersonResponseDTO{
+	response := dtos.ResponseDTO{
 		ID:      person.Id(),
 		Name:    person.Name(),
 		Age:     person.Age(),
@@ -119,7 +119,7 @@ func (pc *PersonController) Get(c *gin.Context) {
 		return
 	}
 
-	response := dtos.PersonResponseDTO{
+	response := dtos.ResponseDTO{
 		ID:      person.Id(),
 		Name:    person.Name(),
 		Age:     person.Age(),
@@ -136,9 +136,9 @@ func (pc *PersonController) GetAll(c *gin.Context) {
 		return
 	}
 
-	var responses []dtos.PersonResponseDTO
+	var responses = make([]dtos.ResponseDTO, 0)
 	for _, person := range persons {
-		responses = append(responses, dtos.PersonResponseDTO{
+		responses = append(responses, dtos.ResponseDTO{
 			ID:      person.Id(),
 			Name:    person.Name(),
 			Age:     person.Age(),

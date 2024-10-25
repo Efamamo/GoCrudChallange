@@ -2,13 +2,13 @@ package dtos
 
 import "github.com/google/uuid"
 
-type CreatePersonDTO struct {
+type CreateDTO struct {
 	Name    string   `json:"name" binding:"required"`
 	Age     int16    `json:"age" binding:"required"`
 	Hobbies []string `json:"hobbies"`
 }
 
-type PersonResponseDTO struct {
+type ResponseDTO struct {
 	ID      uuid.UUID `json:"id"`
 	Name    string    `json:"name"`
 	Age     int16     `json:"age"`

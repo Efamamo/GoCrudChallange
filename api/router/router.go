@@ -24,5 +24,11 @@ func StartRouter(pc controller.PersonController) {
 	r.PUT("/person/:id", pc.Update)
 	r.DELETE("/person/:id", pc.Delete)
 
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(404, gin.H{
+			"error": "Route not found",
+		})
+	})
+
 	r.Run()
 }

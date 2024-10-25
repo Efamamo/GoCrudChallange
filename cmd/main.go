@@ -14,9 +14,9 @@ func main() {
 	updatePersonHandler := command.NewUpdatePersonHandler(personRepo)
 	deletePersonHandler := command.NewDeletePersonHandler(personRepo)
 	getPersonHandler := query.NewGetPersonHandler(personRepo)
-	getAllPersonsHandler := query.NewGetAllPersonHandler(personRepo)
+	getAllPersonsHandler := query.NewGetPeopleHandler(personRepo)
 
-	pc := controller.PersonController{
+	personController := controller.PersonController{
 		CreateHandler: createPersonHandler,
 		UpdateHandler: updatePersonHandler,
 		DeleteHandler: deletePersonHandler,
@@ -24,5 +24,5 @@ func main() {
 		GetAllHandler: getAllPersonsHandler,
 	}
 
-	router.StartRouter(pc)
+	router.StartRouter(personController)
 }
