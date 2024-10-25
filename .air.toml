@@ -1,0 +1,19 @@
+# .air.toml
+
+# Root directory of your project
+root = "."
+# Specify the command to run your Go application
+cmd = "go run ./cmd/server/main.go"
+# Include specific extensions to watch
+[build]
+  include_ext = ["go", "mod", "sum"]
+
+[log]
+  level = "debug"
+
+[directories]
+  exclude_dir = ["vendor", "tmp"]
+
+[dev]
+  enabled = true
+  cmd_args = ["run"]
