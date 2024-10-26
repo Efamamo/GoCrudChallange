@@ -1,6 +1,6 @@
 package icmd
 
-import ierr "github.com/Efamamo/GoCrudChallange/domain/common"
+import ierr "github.com/Efamamo/GoCrudChallange/domain/error"
 
 // IHandler is a generic interface for handling commands in the CQRS architecture.
 // It defines a method for processing commands and returning a result or error.

@@ -1,12 +1,11 @@
 package controller
 
 import (
-	"github.com/Efamamo/GoCrudChallange/api/dtos"
 	errapi "github.com/Efamamo/GoCrudChallange/api/error"
 	icmd "github.com/Efamamo/GoCrudChallange/application/common/cqrs/command"
 	iquery "github.com/Efamamo/GoCrudChallange/application/common/cqrs/query"
 	"github.com/Efamamo/GoCrudChallange/application/people/command"
-	ierr "github.com/Efamamo/GoCrudChallange/domain/common"
+	ierr "github.com/Efamamo/GoCrudChallange/domain/error"
 	model "github.com/Efamamo/GoCrudChallange/domain/model/person"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -25,7 +24,7 @@ type PersonController struct {
 // It parses JSON data from the request body, validates it, and calls the CreateHandler to add a new Person.
 // Responds with a 201 status code if successful, or 400 if the input is invalid.
 func (pc *PersonController) Create(c *gin.Context) {
-	var dto dtos.CreateDTO
+	var dto CreateDTO
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
 		e := errapi.NewBadRequest("Invalid input data format")
@@ -48,7 +47,7 @@ func (pc *PersonController) Create(c *gin.Context) {
 	}
 
 	// Prepares the response DTO
-	response := dtos.ResponseDTO{
+	response := ResponseDTO{
 		ID:      p.Id(),
 		Name:    p.Name(),
 		Age:     p.Age(),
@@ -62,7 +61,7 @@ func (pc *PersonController) Create(c *gin.Context) {
 // It retrieves the ID from the URL, binds JSON data from the request, and calls UpdateHandler to apply changes.
 // Returns a 201 status code if successful or relevant errors for invalid input or update issues.
 func (pc *PersonController) Update(c *gin.Context) {
-	var dto dtos.CreateDTO
+	var dto CreateDTO
 
 	// Parse and validate UUID from the URL
 	id, err := uuid.Parse(c.Param("id"))
@@ -101,7 +100,7 @@ func (pc *PersonController) Update(c *gin.Context) {
 	}
 
 	// Prepare response DTO
-	response := dtos.ResponseDTO{
+	response := ResponseDTO{
 		ID:      person.Id(),
 		Name:    person.Name(),
 		Age:     person.Age(),
@@ -163,7 +162,7 @@ func (pc *PersonController) Get(c *gin.Context) {
 	}
 
 	// Prepare response DTO
-	response := dtos.ResponseDTO{
+	response := ResponseDTO{
 		ID:      person.Id(),
 		Name:    person.Name(),
 		Age:     person.Age(),
@@ -179,15 +178,17 @@ func (pc *PersonController) GetAll(c *gin.Context) {
 	persons, _ := pc.GetAllHandler.Handle(struct{}{})
 
 	// Prepare response list by mapping each Person to ResponseDTO
-	var responses = make([]dtos.ResponseDTO, 0)
+	var responses = make([]ResponseDTO, 0)
 	for _, person := range persons {
-		responses = append(responses, dtos.ResponseDTO{
+		responses = append(responses, ResponseDTO{
 			ID:      person.Id(),
 			Name:    person.Name(),
 			Age:     person.Age(),
 			Hobbies: person.Hobbies(),
 		})
 	}
+
+	
 
 	c.IndentedJSON(200, responses)
 }

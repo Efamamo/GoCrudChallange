@@ -20,12 +20,10 @@ func NewGetPeopleHandler(repo irepo.IPerson) *GetPeopleHandler {
 }
 
 // Handle processes the query to retrieve all people.
-// It returns a slice of pointers to Person models and an error, if any.
 func (h *GetPeopleHandler) Handle(_ struct{}) ([]*model.Person, error) {
-	// Retrieve all people from the repository.
 	people, err := h.repo.GetAll()
 	if err != nil {
-		return nil, err // Return nil and the error if the retrieval fails.
+		return nil, err
 	}
-	return people, nil // Return the slice of people and no error.
+	return people, nil
 }

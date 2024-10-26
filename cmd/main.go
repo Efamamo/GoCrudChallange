@@ -5,10 +5,13 @@ import (
 	"github.com/Efamamo/GoCrudChallange/api/router"
 	"github.com/Efamamo/GoCrudChallange/application/people/command"
 	"github.com/Efamamo/GoCrudChallange/application/people/query"
+	"github.com/Efamamo/GoCrudChallange/config"
 	"github.com/Efamamo/GoCrudChallange/infrastructure/repository"
 )
 
 func main() {
+	cfg := config.Envs
+
 	// Initialize the person repository.
 	personRepo := repository.NewPersonRepo()
 
@@ -31,5 +34,13 @@ func main() {
 	}
 
 	// Start the API router with the person controller to handle requests.
-	router.StartRouter(personController)
+	controllers := []any{personController}
+	r := router.NewRouter(router.Config{
+		Host:cfg.Host,
+		Port: cfg.Port,
+		Controllers: controllers,
+	
+	})
+
+	r.StartRouter(personController)
 }

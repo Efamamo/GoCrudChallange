@@ -2,8 +2,7 @@ package errapi
 
 import (
 	apperror "github.com/Efamamo/GoCrudChallange/application/error"
-	ierr "github.com/Efamamo/GoCrudChallange/domain/common"
-	errdmn "github.com/Efamamo/GoCrudChallange/domain/error/common/error"
+	ierr "github.com/Efamamo/GoCrudChallange/domain/error"
 )
 
 // HTTP status codes used in the Error type.
@@ -70,13 +69,13 @@ func (e Error) StatusCode() int {
 
 func Map(err ierr.IErr) Error {
 	switch err.Type() {
-	case errdmn.NotFound:
+	case ierr.NotFound:
 		return NewNotFound(err.Error())
-	case errdmn.Validation:
+	case ierr.Validation:
 		return NewBadRequest(err.Error())
-	case errdmn.Conflict:
+	case ierr.Conflict:
 		return NewConflict(err.Error())
-	case errdmn.Unexpected:
+	case ierr.Unexpected:
 		return NewServerError(err.Error())
 	case apperror.Authentication:
 		return NewAuthentication(err.Error())

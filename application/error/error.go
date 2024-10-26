@@ -8,7 +8,7 @@ package apperror
 import (
 	"fmt"
 
-	ierr "github.com/Efamamo/GoCrudChallange/domain/common"
+	ierr "github.com/Efamamo/GoCrudChallange/domain/error"
 )
 
 // Predefined error types.

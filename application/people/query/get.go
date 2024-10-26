@@ -21,13 +21,11 @@ func NewGetPersonHandler(repo irepo.IPerson) *GetPersonHandler {
 }
 
 // Handle processes the query to retrieve a person by their ID.
-// It returns a pointer to the Person model and an error, if any.
 func (h *GetPersonHandler) Handle(id uuid.UUID) (*model.Person, error) {
-	// Retrieve the person from the repository using the provided ID.
 	person, err := h.repo.Get(id)
 	if err != nil {
-		return nil, err // Return nil and the error if the retrieval fails.
+		return nil, err
 	}
 
-	return person, nil // Return the person and no error if successful.
+	return person, nil
 }

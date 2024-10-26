@@ -3,7 +3,7 @@ package command
 import (
 	icmd "github.com/Efamamo/GoCrudChallange/application/common/cqrs/command"
 	irepo "github.com/Efamamo/GoCrudChallange/application/common/interface/repository"
-	ierr "github.com/Efamamo/GoCrudChallange/domain/common"
+	ierr "github.com/Efamamo/GoCrudChallange/domain/error"
 	"github.com/google/uuid"
 )
 
@@ -21,11 +21,9 @@ func NewDeletePersonHandler(repo irepo.IPerson) *DeletePersonHandler {
 }
 
 // Handle processes the command to delete a person by their ID.
-// It returns a boolean indicating success and an error, if any.
 func (h *DeletePersonHandler) Handle(id uuid.UUID) (bool, ierr.IErr) {
-	// Attempt to delete the person with the given ID from the repository.
 	if err := h.repo.Delete(id); err != nil {
-		return false, err // Return false and the error if the deletion fails.
+		return false, err
 	}
-	return true, nil // Return true if the deletion was successful.
+	return true, nil
 }

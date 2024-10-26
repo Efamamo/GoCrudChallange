@@ -1,15 +1,37 @@
 package router
 
 import (
+	"fmt"
+
 	"github.com/Efamamo/GoCrudChallange/api/controller"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-// StartRouter initializes the Gin router, sets up CORS, defines route handlers,
-// and starts the HTTP server.
-func StartRouter(pc controller.PersonController) {
-	// Initialize a new Gin router with default middleware (logger and recovery)
+type Router struct {
+	host        string
+	port        string
+	controllers []any
+}
+
+// Config holds configuration settings for creating a new Router instance.
+type Config struct {
+	Host        string
+	Port        string
+	Controllers []any // List of controllers
+}
+
+// NewRouter creates a new Router instance with the given configuration.
+func NewRouter(config Config) *Router {
+	return &Router{
+		port:        config.Port,
+		host:        config.Host,
+		controllers: config.Controllers,
+	}
+}
+
+// StartRouter initializes the Gin router, sets up CORS, defines route handlers, and starts the HTTP server.
+func (router *Router) StartRouter(pc controller.PersonController) {
 	r := gin.Default()
 
 	// Configure CORS settings to allow requests from any origin, specify allowed methods and headers.
@@ -20,23 +42,24 @@ func StartRouter(pc controller.PersonController) {
 		ExposeHeaders:   []string{"Content-Length"},               // Headers exposed to the client
 	})
 
-	// Apply the CORS middleware to all routes
 	r.Use(corsConfiguration)
 
-	// Define route handlers for Person entity CRUD operations
-	r.POST("/person", pc.Create)       // Route for creating a new person
-	r.GET("/person", pc.GetAll)        // Route for retrieving all persons
-	r.GET("/person/:id", pc.Get)       // Route for retrieving a specific person by ID
-	r.PUT("/person/:id", pc.Update)    // Route for updating an existing person by ID
-	r.DELETE("/person/:id", pc.Delete) // Route for deleting a person by ID
+	// Group all routes related to person operations
+	personRoutes := r.Group("/person")
+	{
+		personRoutes.POST("", pc.Create)       // POST /person
+		personRoutes.GET("", pc.GetAll)        // GET /person
+		personRoutes.GET("/:id", pc.Get)       // GET /person/:id
+		personRoutes.PUT("/:id", pc.Update)    // PUT /person/:id
+		personRoutes.DELETE("/:id", pc.Delete) // DELETE /person/:id
+	}
 
 	// Handler for undefined routes (404 Not Found)
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{
-			"error": "Route not found", // Response message for non-existing routes
+			"error": "Route not found",
 		})
 	})
 
-	// Start the HTTP server on the default port (8080)
-	r.Run()
+	r.Run(fmt.Sprintf("%s:%s", router.host, router.port))
 }
