@@ -3,6 +3,7 @@ package command
 import (
 	icmd "github.com/Efamamo/GoCrudChallange/application/common/cqrs/command"
 	irepo "github.com/Efamamo/GoCrudChallange/application/common/interface/repository"
+	ierr "github.com/Efamamo/GoCrudChallange/domain/common"
 	model "github.com/Efamamo/GoCrudChallange/domain/model/person"
 	"github.com/google/uuid"
 )
@@ -24,7 +25,7 @@ func NewUpdatePersonHandler(repo irepo.IPerson) *UpdatePersonHandler {
 	return &UpdatePersonHandler{repo: repo}
 }
 
-func (h *UpdatePersonHandler) Handle(command *UpdatePersonCommand) (*model.Person, error) {
+func (h *UpdatePersonHandler) Handle(command *UpdatePersonCommand) (*model.Person, ierr.IErr) {
 	person, err := h.repo.Get(command.ID)
 	if err != nil {
 		return nil, err

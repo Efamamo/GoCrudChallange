@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"errors"
-
+	ierr "github.com/Efamamo/GoCrudChallange/domain/common"
+	errdmn "github.com/Efamamo/GoCrudChallange/domain/error/common/error"
 	model "github.com/Efamamo/GoCrudChallange/domain/model/person"
 	"github.com/google/uuid"
 )
@@ -17,9 +17,9 @@ func NewPersonRepo() *PersonRepo {
 	}
 }
 
-func (r *PersonRepo) Save(person *model.Person) error {
+func (r *PersonRepo) Save(person *model.Person) ierr.IErr {
 	if person == nil {
-		return errors.New("person cant be empty")
+		return errdmn.NewValidation("person cant be empty")
 	}
 
 	var idx = -1
@@ -39,7 +39,7 @@ func (r *PersonRepo) Save(person *model.Person) error {
 	return nil
 }
 
-func (r *PersonRepo) Get(id uuid.UUID) (*model.Person, error) {
+func (r *PersonRepo) Get(id uuid.UUID) (*model.Person, ierr.IErr) {
 
 	var person *model.Person
 
@@ -50,12 +50,12 @@ func (r *PersonRepo) Get(id uuid.UUID) (*model.Person, error) {
 	}
 
 	if person == nil {
-		return nil, errors.New("person not found")
+		return nil, errdmn.NewNotFound("person not found")
 	}
 	return person, nil
 }
 
-func (r *PersonRepo) Delete(id uuid.UUID) error {
+func (r *PersonRepo) Delete(id uuid.UUID) ierr.IErr {
 
 	idx := -1
 	for i, p := range r.people {
@@ -65,13 +65,13 @@ func (r *PersonRepo) Delete(id uuid.UUID) error {
 	}
 
 	if idx == -1 {
-		return errors.New("person not found")
+		return errdmn.NewNotFound("person not found")
 	}
 
 	r.people = append(r.people[0:idx], r.people[idx+1:]...)
 	return nil
 }
 
-func (r *PersonRepo) GetAll() ([]*model.Person, error) {
+func (r *PersonRepo) GetAll() ([]*model.Person, ierr.IErr) {
 	return r.people, nil
 }

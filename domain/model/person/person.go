@@ -3,6 +3,8 @@ package model
 import (
 	"fmt"
 
+	ierr "github.com/Efamamo/GoCrudChallange/domain/common"
+	errdmn "github.com/Efamamo/GoCrudChallange/domain/error/common/error"
 	"github.com/google/uuid"
 )
 
@@ -19,7 +21,7 @@ type PersonConfig struct {
 	Hobbies []string
 }
 
-func CreatePerson(pc *PersonConfig) (*Person, error) {
+func CreatePerson(pc *PersonConfig) (*Person, ierr.IErr) {
 	newPerson := &Person{
 		id: uuid.New(),
 	}
@@ -40,19 +42,20 @@ func CreatePerson(pc *PersonConfig) (*Person, error) {
 	return newPerson, nil
 }
 
-func (p *Person) SetName(name string) error {
+func (p *Person) SetName(name string) ierr.IErr {
 	min := 5
 	max := 50
 	if len(name) < min || len(name) > max {
-		return fmt.Errorf("name length should be between %d and %d", min, max)
+		return errdmn.NewValidation(fmt.Sprintf("name length should be between %d and %d", min, max))
 	}
+
 	p.name = name
 	return nil
 }
 
-func (p *Person) SetAge(age int16) error {
+func (p *Person) SetAge(age int16) ierr.IErr {
 	if age < 0 {
-		return fmt.Errorf("age should be greater than 0")
+		return errdmn.NewValidation("age should be greater than 0")
 	}
 	p.age = age
 	return nil

@@ -2,9 +2,11 @@ package controller
 
 import (
 	"github.com/Efamamo/GoCrudChallange/api/dtos"
+	errapi "github.com/Efamamo/GoCrudChallange/api/error"
 	icmd "github.com/Efamamo/GoCrudChallange/application/common/cqrs/command"
 	iquery "github.com/Efamamo/GoCrudChallange/application/common/cqrs/query"
 	"github.com/Efamamo/GoCrudChallange/application/people/command"
+	ierr "github.com/Efamamo/GoCrudChallange/domain/common"
 	model "github.com/Efamamo/GoCrudChallange/domain/model/person"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -21,9 +23,9 @@ type PersonController struct {
 func (pc *PersonController) Create(c *gin.Context) {
 	var dto dtos.CreateDTO
 	err := c.ShouldBindJSON(&dto)
-
 	if err != nil {
-		c.IndentedJSON(400, err.Error())
+		e := errapi.NewBadRequest("Invalid id format")
+		c.IndentedJSON(e.StatusCode(), gin.H{"error": e.Error()})
 		return
 	}
 
@@ -54,15 +56,17 @@ func (pc *PersonController) Create(c *gin.Context) {
 func (pc *PersonController) Update(c *gin.Context) {
 	var dto dtos.CreateDTO
 	id, err := uuid.Parse(c.Param("id"))
-
 	if err != nil {
-		c.IndentedJSON(400, gin.H{"error": "Invalid Id Format"})
+		e := errapi.NewBadRequest("Invalid id format")
+		c.IndentedJSON(e.StatusCode(), gin.H{"error": e.Error()})
 		return
 	}
 
 	if err := c.ShouldBindJSON(&dto); err != nil {
-		c.IndentedJSON(400, err.Error())
+		e := errapi.NewBadRequest(err.Error())
+		c.IndentedJSON(e.StatusCode(), gin.H{"error": e.Error()})
 		return
+
 	}
 
 	command := &command.UpdatePersonCommand{
@@ -74,8 +78,15 @@ func (pc *PersonController) Update(c *gin.Context) {
 
 	person, err := pc.UpdateHandler.Handle(command)
 	if err != nil {
-		c.IndentedJSON(400, gin.H{"error": err.Error()})
-		return
+		if customErr, ok := err.(ierr.IErr); ok {
+			e := errapi.Map(customErr)
+			c.IndentedJSON(e.StatusCode(), gin.H{"error": e.Error()})
+			return
+
+		} else {
+			c.IndentedJSON(400, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 	response := dtos.ResponseDTO{
@@ -92,15 +103,22 @@ func (pc *PersonController) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 
 	if err != nil {
-		c.IndentedJSON(400, gin.H{"error": "Invalid Id Format"})
+		e := errapi.NewBadRequest("Invalid id format")
+		c.IndentedJSON(e.StatusCode(), gin.H{"error": e.Error()})
 		return
 	}
-
 	_, err = pc.DeleteHandler.Handle(id)
 
 	if err != nil {
-		c.IndentedJSON(400, gin.H{"error": err.Error()})
-		return
+		if customErr, ok := err.(ierr.IErr); ok {
+			e := errapi.Map(customErr)
+			c.IndentedJSON(e.StatusCode(), gin.H{"error": e.Error()})
+			return
+
+		} else {
+			c.IndentedJSON(404, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 	c.IndentedJSON(204, nil)
@@ -109,14 +127,22 @@ func (pc *PersonController) Delete(c *gin.Context) {
 func (pc *PersonController) Get(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.IndentedJSON(400, gin.H{"error": "Invalid Id Format"})
+		e := errapi.NewBadRequest("Invalid id format")
+		c.IndentedJSON(e.StatusCode(), gin.H{"error": e.Error()})
 		return
 	}
 
 	person, err := pc.GetHandler.Handle(id)
 	if err != nil {
-		c.IndentedJSON(404, gin.H{"error": err.Error()})
-		return
+		if customErr, ok := err.(ierr.IErr); ok {
+			e := errapi.Map(customErr)
+			c.IndentedJSON(e.StatusCode(), gin.H{"error": e.Error()})
+			return
+
+		} else {
+			c.IndentedJSON(404, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 	response := dtos.ResponseDTO{
@@ -130,12 +156,7 @@ func (pc *PersonController) Get(c *gin.Context) {
 }
 
 func (pc *PersonController) GetAll(c *gin.Context) {
-	persons, err := pc.GetAllHandler.Handle(struct{}{})
-	if err != nil {
-		c.IndentedJSON(500, err)
-		return
-	}
-
+	persons, _ := pc.GetAllHandler.Handle(struct{}{})
 	var responses = make([]dtos.ResponseDTO, 0)
 	for _, person := range persons {
 		responses = append(responses, dtos.ResponseDTO{
