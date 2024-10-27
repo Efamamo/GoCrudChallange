@@ -21,7 +21,6 @@ Your task is to implement simple CRUD API using in-memory database underneath.
 5. Internal server errors should be handled and processed correctly.
 6. Make sure the api is accesible by frontend apps hosted on a different domain (cross-site resource sharing)
 
-# Go CRUD Challenge
 
 ## Overview
 
@@ -97,7 +96,7 @@ go install github.com/cosmtrek/air@latest
 To run tests, execute:
 
 ```bash
-make test -cov
+make test-cov
 ```
 
 This will compile and run the tests in the `test` directory. You can check the output for results and coverage information.
